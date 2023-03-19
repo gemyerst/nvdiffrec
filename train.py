@@ -366,7 +366,12 @@ def optimize_mesh(
     iter_dur_vec = []
 
     dataloader_train    = torch.utils.data.DataLoader(dataset_train, batch_size=FLAGS.batch, collate_fn=dataset_train.collate, shuffle=True)
-    dataloader_validate = torch.utils.data.DataLoader(dataset_validate, batch_size=1, collate_fn=dataset_train.collate)
+
+    # only validate if validation folder exists
+    if(dataset_validate):
+        dataloader_validate = torch.utils.data.DataLoader(dataset_validate, batch_size=1, collate_fn=dataset_validate.collate)
+    else:
+        dataloader_validate = torch.utils.data.DataLoader(dataset_validate, batch_size=1, collate_fn=dataset_train.collate)
 
     def cycle(iterable):
         iterator = iter(iterable)
@@ -568,7 +573,11 @@ if __name__ == "__main__":
             dataset_validate = DatasetLLFF(FLAGS.ref_mesh, FLAGS)
         elif os.path.isfile(os.path.join(FLAGS.ref_mesh, 'transforms_train.json')):
             dataset_train    = DatasetNERF(os.path.join(FLAGS.ref_mesh, 'transforms_train.json'), FLAGS, examples=(FLAGS.iter+1)*FLAGS.batch)
-            dataset_validate = DatasetNERF(os.path.join(FLAGS.ref_mesh, 'transforms_test.json'), FLAGS)
+            transform_path = os.path.join(FLAGS.ref_mesh, 'transforms_test.json')
+            if(os.path.exists(transform_path)):
+                dataset_validate = DatasetNERF(transform_path, FLAGS)
+            else:
+                dataset_validate = DatasetNERF(os.path.join(FLAGS.ref_mesh, 'transforms_train.json'), FLAGS)
 
     # ==============================================================================================
     #  Create env light with trainable parameters
