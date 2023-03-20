@@ -499,7 +499,7 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--out-dir', type=str, default=None)
     parser.add_argument('-rm', '--ref_mesh', type=str)
     parser.add_argument('-bm', '--base-mesh', type=str, default=None)
-    parser.add_argument('--validate', type=bool, default=True)
+    parser.add_argument('--validate', type=bool, default=False)
     
     FLAGS = parser.parse_args()
 
